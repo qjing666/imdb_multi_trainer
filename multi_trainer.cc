@@ -82,15 +82,9 @@ void ThreadedRunTrain(
     std::vector<paddle::framework::DataFeed*> readers,
     paddle::framework::Executor* executor, 
     paddle::framework::Scope* scope,
-    std::vector<std::string> file_vec,
-    const int thread_id,
-    int num_thread){
+    const int thread_id){
 
     
-    std::vector<std::string> thread_file_vec;
-    for (int offset = thread_id; offset < file_vec.size();offset += num_thread){
-        thread_file_vec.pushback(file_vec[offset]);
-    }
     readers[thread_id]->SetPlace(paddle::platform::CPUPlace());
     const std::vector<std::string>& input_feed_names =
         readers[thread_id]->GetUseSlotAlias();
