@@ -1,13 +1,13 @@
 # imdb_multi_trainer
 
-##prepare data
+## prepare data
 
 ```shell
 wget https://fleet.bj.bcebos.com/text_classification_data.tar.gz
 tar -zxvf text_classification_data.tar.gz
 ```
 
-##build
+## build
 
 ```shell
 mkdir build
@@ -16,4 +16,16 @@ rm -rf *
 PADDLE_LIB=path/to/your/fluid_inference_install_dir/
 cmake .. -DPADDLE_LIB=$PADDLE_LIB  -DWITH_MKLDNN=OFF -DWITH_MKL=OFF
 make
+```
+
+## generate program description
+
+```shell
+python generate_program.py bow
+```
+
+## run
+
+```shell 
+bash run.sh
 ```
