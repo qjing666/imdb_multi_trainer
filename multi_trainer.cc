@@ -179,21 +179,7 @@ int main(int argc, char* argv[]) {
         dataset_ptr->GetReaders();
     PADDLE_ENFORCE_EQ(readers.size(), thread_num,
                       "readers num should be equal to thread num");
-    //for(int i=0;i<num_thread;i++){
-    //    readers[i]->SetPlace(paddle::platform::CPUPlace());
-    //    const std::vector<std::string>& input_feed_names =
-    //        readers[i]->GetUseSlotAlias();
-    //    for (auto name : input_feed_names) {
-    //      readers[i]->AddFeedVar(scope.Var(name), name);
-    //    }
-    //    readers[i]->Start();
-    //}
-    //VLOG(3) << "get reader done";
-    //readers[0]->Start();
-    //VLOG(3) << "start a reader";
-    //VLOG(3) << "readers size: " << readers.size();
 
-    //std::vector<float> loss_vec;
     std::vector<std::thread*> threads;
     for (int i = 0; i < num_thread; ++i) {
         threads.push_back(new std::thread(
@@ -203,15 +189,6 @@ int main(int argc, char* argv[]) {
         threads[i]->join();
         delete threads[i];
     }   
-    //while (readers[0]->Next() > 0) {
-    //  executor.Run(*main_program, &scope, 0, false, true);
-    //  loss_vec.push_back(
-    //      loss_var->Get<paddle::framework::LoDTensor>().data<float>()[0]);
-    //}
-    //float average_loss =
-    //     accumulate(loss_vec.begin(), loss_vec.end(), 0.0) / loss_vec.size();
-
-    //LOG(INFO) << "epoch: " << epoch << "; average loss: " << average_loss;
     dataset_ptr->DestroyReaders();
 
     // save model
