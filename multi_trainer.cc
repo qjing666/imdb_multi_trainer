@@ -82,9 +82,16 @@ void ThreadedRunTrain(
     std::vector<paddle::framework::DataFeed*> readers,
     paddle::framework::Executor* executor, 
     paddle::framework::Scope* scope,
-    const int thread_id){
+    std::vector<std::string> file_vec,
+    const int thread_id,
+    int num_thread
+    ){
 
-    
+ 
+    std::vector<std::string> thread_file_vec;
+    for (int offset = thread_id; offset < file_vec.size();offset += num_thread){
+        thread_file_vec.pushback(file_vec[offset]);
+    }
     readers[thread_id]->SetPlace(paddle::platform::CPUPlace());
     const std::vector<std::string>& input_feed_names =
         readers[thread_id]->GetUseSlotAlias();
@@ -93,9 +100,12 @@ void ThreadedRunTrain(
     }
     readers[thread_id]->Start();
     
+    std::string trainer_desc_str;
+    trainer = executor.InitForDataset(&main_program, &trainer_desc_str, &scope, &dataset_ptr)
     std::vector<float> loss_vec;
     while (readers[thread_id]->Next() > 0) {
-      executor.Run(*main_program, &scope, 0, false, true);
+      //executor.Run(*main_program, &scope, 0, false, true);
+      executor.RunFromDataset(&trainer)
       loss_vec.push_back(
           loss_var->Get<paddle::framework::LoDTensor>().data<float>()[0]);
     }
@@ -179,7 +189,6 @@ int main(int argc, char* argv[]) {
         dataset_ptr->GetReaders();
     PADDLE_ENFORCE_EQ(readers.size(), thread_num,
                       "readers num should be equal to thread num");
-
     std::vector<std::thread*> threads;
     for (int i = 0; i < num_thread; ++i) {
         threads.push_back(new std::thread(
